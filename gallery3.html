@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>갤러리</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    .gallery img {
+      max-width: 100%;
+      margin-top: 10px;
+    }
+    .gallery-item {
+      margin-bottom: 20px;
+    }
+    @media only screen and (max-width: 600px) {
+      .container {
+        padding: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>업로드된 사진들</h1>
+    <div id="gallery" class="gallery"></div>
+    <br>
+    <a href="upload2.html">사진 업로드로 돌아가기</a>
+  </div>
+
+  <script>
+    const galleryDiv = document.getElementById('gallery');
+    const storedPhotos = JSON.parse(localStorage.getItem('photos')) || [];
+
+    // 갤러리 초기화
+    function updateGallery() {
+      galleryDiv.innerHTML = '';
+      if (storedPhotos.length === 0) {
+        galleryDiv.innerHTML = '<p>아직 업로드된 사진이 없습니다.</p>';
+      } else {
+        storedPhotos.forEach(photo => {
+          const galleryItem = document.createElement('div');
+          galleryItem.classList.add('gallery-item');
+
+          const imgElement = document.createElement('img');
+          imgElement.src = photo.image;
+
+          const dateElement = document.createElement('p');
+          dateElement.textContent = `업로드 날짜: ${photo.date}`;
+
+          galleryItem.appendChild(imgElement);
+          galleryItem.appendChild(dateElement);
+          galleryDiv.appendChild(galleryItem);
+        });
+      }
+    }
+
+    // 페이지 로드 시 갤러리 업데이트
+    updateGallery();
+  </script>
+</body>
+</html>
