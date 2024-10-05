@@ -49,7 +49,7 @@
     <h2>업로드된 사진들</h2>
     <div id="gallery" class="gallery"></div>
     <br>
-    <a href="gallery.html">갤러리로 이동</a>
+    <a href="gallery2.html">갤러리로 이동</a>
   </div>
 
   <script>
@@ -61,7 +61,6 @@
     // 갤러리 업데이트 함수
     function updateGallery() {
       galleryDiv.innerHTML = '';
-
       if (storedPhotos.length === 0) {
         galleryDiv.innerHTML = '<p>아직 업로드된 사진이 없습니다.</p>';
       } else {
@@ -88,19 +87,18 @@
       }
     }
 
-    // 사진 삭제 함수 (업로드 페이지에서만 가능)
+    // 사진 삭제 함수
     function deletePhoto(index) {
       if (confirm('정말로 이 사진을 삭제하시겠습니까?')) {
-        storedPhotos.splice(index, 1); // 해당 사진 삭제
-        localStorage.setItem('photos', JSON.stringify(storedPhotos)); // 로컬 스토리지 업데이트
-        updateGallery(); // 갤러리 업데이트
+        storedPhotos.splice(index, 1);
+        localStorage.setItem('photos', JSON.stringify(storedPhotos));
+        updateGallery();
       }
     }
 
     // 업로드 이벤트 처리
     uploadForm.addEventListener('submit', function(event) {
       event.preventDefault();
-
       const file = fileInput.files[0];
       if (!file) {
         alert('파일을 선택하세요.');
@@ -110,7 +108,7 @@
       const reader = new FileReader();
       reader.onload = function(e) {
         const imageDataUrl = e.target.result;
-        const currentDate = new Date().toLocaleString(); // 업로드 날짜
+        const currentDate = new Date().toLocaleString();
 
         const photoData = {
           image: imageDataUrl,
@@ -121,8 +119,8 @@
         localStorage.setItem('photos', JSON.stringify(storedPhotos));
 
         alert('사진이 성공적으로 업로드되었습니다!');
-        fileInput.value = ''; // 파일 입력 초기화
-        updateGallery(); // 갤러리 업데이트
+        fileInput.value = '';
+        updateGallery();
       };
       reader.readAsDataURL(file);
     });
