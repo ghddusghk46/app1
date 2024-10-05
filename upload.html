@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>사진 업로드</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    .gallery img {
+      max-width: 100%;
+      margin-top: 10px;
+    }
+    .gallery-item {
+      margin-bottom: 20px;
+    }
+    .delete-btn {
+      background-color: red;
+      color: white;
+      border: none;
+      padding: 10px;
+      cursor: pointer;
+    }
+    .delete-btn:hover {
+      background-color: darkred;
+    }
+    @media only screen and (max-width: 600px) {
+      .container {
+        padding: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>사진 업로드 및 삭제</h1>
+    <form id="uploadForm">
+      <label for="fileInput">사진을 선택하세요:</label>
+      <input type="file" id="fileInput" accept="image/*" required><br><br>
+      <button type="submit">업로드</button>
+    </form>
+    <br>
+    <h2>업로드된 사진들</h2>
+    <div id="gallery" class="gallery"></div>
+
+    <br>
+    <a href="gallery.html">갤러리로 이동</a>
+  </div>
+
+  <script>
+    const fileInput = document.getElementById('fileInput');
+    const uploadForm = document.getElementById('uploadForm');
+    const galleryDiv = document.getElementById('gallery');
+    let storedPhotos = JSON.parse(localStorage.getItem('photos')) || [];
+
+    // 갤러리 업데이트 함수
+    function updateGallery() {
+      galleryDiv.innerHTML = '';
+
+      if (storedPhotos.length === 0) {
+        galleryDiv.innerHTML = '<p>아직 업로드된 사진이 없습니다.</p>';
+      } else {
+        storedPhotos.forEach((photo, index) => {
+          const galleryItem = document.createElement('div');
+          galleryItem.classList.add('gallery-item');
+
+          const imgElement = document.createElement('img');
+          imgElement.src = photo.image;
+
+          const dateElement = document.createElement('p');
+          dateElement.textContent = `업로드 날짜: ${photo.date}`;
+
+          const deleteButton = document.createElement('button');
+          deleteButton.textContent = '삭제';
+          deleteButton.classList.add('delete-btn');
+          deleteButton.addEventListener('click', () => deletePhoto(index));
+
+          galleryItem.appendChild(imgElement);
+          galleryItem.appendChild(dateElement);
+          galleryItem.appendChild(deleteButton);
+          galleryDiv.appendChild(galleryItem);
+        });
+      }
+    }
+
+    // 사진 삭제 함수 (업로드 페이지에서만 가능)
+    function deletePhoto(index) {
+      if (confirm('정말로 이 사진을 삭제하시겠습니까?')) {
+        storedPhotos.splice(index, 1); // 해당 사진 삭제
+        localStorage.setItem('photos', JSON.stringify(storedPhotos)); // 로컬 스토리지 업데이트
+        updateGallery(); // 갤러리 업데이트
+      }
+    }
+
+    // 업로드 이벤트 처리
+    uploadForm.addEventListener('submit', function(event) {
+      event.preventDefault();
+
+      const file = fileInput.files[0];
+      if (!file) {
+        alert('파일을 선택하세요.');
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const imageDataUrl = e.target.result;
+        const currentDate = new Date().toLocaleString(); // 업로드 날짜
+
+        const photoData = {
+          image: imageDataUrl,
+          date: currentDate
+        };
+
+        storedPhotos.push(photoData);
+        localStorage.setItem('photos', JSON.stringify(storedPhotos));
+
+        alert('사진이 성공적으로 업로드되었습니다!');
+        fileInput.value = ''; // 파일 입력 초기화
+        updateGallery(); // 갤러리 업데이트
+      };
+      reader.readAsDataURL(file);
+    });
+
+    // 페이지 로드 시 갤러리 초기화
+    updateGallery();
+  </script>
+</body>
+</html>
